@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "opendata-ph-data-platform"
+version = "0.1.0"
+description = ""
+authors = ["aldencabajar <aldenacabajar@gmail.com>"]
+license = "Apache"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+playwright = "^1.53.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
