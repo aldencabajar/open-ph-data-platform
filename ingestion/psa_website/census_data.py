@@ -5,6 +5,7 @@ import pandas as pd
 from opendata_ph.logger import create_logger
 
 PATH_TO_CENSUS_DATA = "raw/population-by-province-city-and-municipality.xlsx"
+PATH_TO_WRITE = "bronze/psa-website/census-data.csv.gz"
 
 
 def main():
@@ -35,11 +36,13 @@ def main():
 
     merged = pd.concat(dfs)
 
-    (build_folder_path / "bronze" / "psa-website").mkdir(exist_ok=True, parents=True)
+    full_path = build_folder_path / PATH_TO_WRITE
 
-    merged.to_csv(
-        build_folder_path / "bronze/psa-website/census-data.csv.gz", compression="gzip"
-    )
+    full_path.parent.mkdir(exist_ok=True, parents=True)
+
+    merged.to_csv(full_path, compression="gzip", index=False)
+
+    logger.info("written to path %s", str(full_path.absolute()))
 
 
 if __name__ == "__main__":
