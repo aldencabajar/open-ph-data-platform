@@ -61,7 +61,7 @@ def process_workbook(wb: Workbook, logger: Logger):
         if sheet.sheet_state == "visible":
             logger.info(f"processing sheet {sheet_name}...")
             df = process_sheet(wb[sheet_name])
-        dfs.append(df)
+            dfs.append(df)
     
     return pd.concat(dfs)
 
@@ -70,6 +70,8 @@ def main():
     path_to_census_data = Path(sys.argv[1])
     path_to_write = Path(sys.argv[2])
     logger = create_logger("census_data_extraction")
+
+    logger.info("reading workbook %s", str(path_to_census_data))
 
     wb = openpyxl.load_workbook(path_to_census_data)
 

@@ -9,6 +9,7 @@ packages = [
     { include = "opendata_ph", from="src"}
 ]
 
+
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
 playwright = "^1.53.0"
@@ -17,6 +18,7 @@ pandas = "^2.3.1"
 apache-airflow = "^3.0.3"
 pyarrow = "^21.0.0"
 fastparquet = "^2024.11.0"
+apache-airflow-providers-standard = "^1.4.1"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -25,3 +27,4 @@ ipykernel = "^6.30.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
