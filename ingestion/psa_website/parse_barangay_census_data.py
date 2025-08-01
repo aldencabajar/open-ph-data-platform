@@ -2,14 +2,14 @@ import sys
 from logging import Logger
 from pathlib import Path
 
+import duckdb
 import openpyxl
 import pandas as pd
 from openpyxl.workbook.workbook import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 
+from opendata_ph.duckdb import initialize_duckdb_catalog
 from opendata_ph.logger import create_logger
-
-PATH_TO_WRITE = "bronze/psa-website/"
 
 
 def process_sheet(sheet: Worksheet) -> pd.DataFrame:
@@ -50,7 +50,7 @@ def process_sheet(sheet: Worksheet) -> pd.DataFrame:
         data,
     )
 
-    return pd.DataFrame(filtered) 
+    return pd.DataFrame(filtered)
 
 
 def process_workbook(wb: Workbook, logger: Logger):
@@ -62,25 +62,28 @@ def process_workbook(wb: Workbook, logger: Logger):
             logger.info(f"processing sheet {sheet_name}...")
             df = process_sheet(wb[sheet_name])
             dfs.append(df)
-    
+
     return pd.concat(dfs)
 
 
 def main():
     path_to_census_data = Path(sys.argv[1])
-    path_to_write = Path(sys.argv[2])
+    table_to_write = Path(sys.argv[2])
+    ducklake_catalog_conn = sys.argv[3]
+
     logger = create_logger("census_data_extraction")
 
     logger.info("reading workbook %s", str(path_to_census_data))
 
     wb = openpyxl.load_workbook(path_to_census_data)
-
     result = process_workbook(wb, logger)
 
-    path_to_write.parent.mkdir(exist_ok=True, parents=True)
-    result.to_parquet(path_to_write, compression="snappy", index=False)
+    # writing to duckdb
+    catalog = initialize_duckdb_catalog(ducklake_catalog_conn)
 
-    logger.info("written to path %s", str(path_to_write.absolute()))
+    duckdb.sql(f"CREATE OR REPLACE TABLE {catalog}.{table_to_write} AS FROM result")
+
+    logger.info("written to table %s", table_to_write)
 
 
 if __name__ == "__main__":
