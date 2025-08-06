@@ -203,3 +203,8 @@ __marimo__/
 .streamlit/secrets.toml
 
 build/
+
+# dbt artifacts
+target/
+dbt_packages/
+logs/

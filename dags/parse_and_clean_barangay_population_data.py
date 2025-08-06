@@ -36,7 +36,7 @@ def ingest_and_clean_barangay_population_data():
 def parse_barangay_population_data(
     path_to_file: str, table_name: str, catalog_conn: str
 ) -> str:
-    return f"{Path.cwd()}/.venv/bin/python {Path.cwd()}/ingestion/psa_website/parse_barangay_census_data.py '{path_to_file}' '{table_name}' '{catalog_conn}'"
+    return f"{Path.cwd()}/.venv/bin/python {Path.cwd()}/ingest/psa_website/parse_barangay_census_data.py '{path_to_file}' '{table_name}' '{catalog_conn}'"
 
 
 def get_region_name(file_name: Path) -> str:
