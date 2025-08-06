@@ -6,6 +6,6 @@ def initialize_duckdb_catalog(
 ) -> str:
     duckdb.sql("INSTALL sqlite; INSTALL ducklake;")
 
-    duckdb.sql(f"ATTACH 'ducklake:sqlite:{ducklake_catalog_conn}' AS {catalog_name}")
+    duckdb.sql(f"ATTACH 'ducklake:{ducklake_catalog_conn}' AS {catalog_name}")
 
     return catalog_name
