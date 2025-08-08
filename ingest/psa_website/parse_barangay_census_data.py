@@ -70,6 +70,7 @@ def main():
     path_to_census_data = Path(sys.argv[1])
     table_to_write = Path(sys.argv[2])
     ducklake_catalog_conn = sys.argv[3]
+    region_label = sys.argv[4]
 
     logger = create_logger("census_data_extraction")
 
@@ -77,6 +78,8 @@ def main():
 
     wb = openpyxl.load_workbook(path_to_census_data)
     result = process_workbook(wb, logger)
+
+    result["region"] = region_label
 
     # writing to duckdb
     catalog = initialize_duckdb_catalog(ducklake_catalog_conn)

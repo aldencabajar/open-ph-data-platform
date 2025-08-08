@@ -37,7 +37,7 @@ def ingest_and_clean_barangay_population_data():
 
         ingest_task = parse_barangay_population_data.override(
             task_id=f"parse_{region_name}"
-        )(str(path.absolute()), table_name, ducklake_metadata_conn)
+        )(str(path.absolute()), table_name, ducklake_metadata_conn, region_name)
 
         ingest_tasks.append(ingest_task)
 
@@ -59,9 +59,13 @@ def drop_temp_schema(catalog_name: str):
 
 @task.bash(pool=duckdb_process_pool_name, cwd=str(Path.cwd().absolute()))
 def parse_barangay_population_data(
-    path_to_file: str, table_name: str, catalog_conn: str
+    path_to_file: str, table_name: str, catalog_conn: str, region_label: str
 ) -> str:
-    return f"{Path.cwd()}/.venv/bin/python {Path.cwd()}/ingest/psa_website/parse_barangay_census_data.py '{path_to_file}' '{table_name}' '{catalog_conn}'"
+    return (
+        f"{Path.cwd()}/.venv/bin/python "
+        f"{Path.cwd()}/ingest/psa_website/parse_barangay_census_data.py "
+        f"'{path_to_file}' '{table_name}' '{catalog_conn}' '{region_label}'"
+    )
 
 
 @task
@@ -69,7 +73,9 @@ def union_all_temp_tables(table_names: List[str], catalog: str):
     sql = "\nUNION ALL\n".join(
         [f"SELECT * FROM {catalog}.{table_name}" for table_name in table_names]
     )
-    wrapped = f"""CREATE OR REPLACE TABLE {catalog}.bronze.barangay_census_data AS ({sql})"""
+    wrapped = (
+        f"""CREATE OR REPLACE TABLE {catalog}.bronze.barangay_census_data AS ({sql})"""
+    )
 
     logger.info("sql to run: %s", wrapped)
     duckdb.sql(wrapped)
