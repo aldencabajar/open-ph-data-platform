@@ -31,6 +31,6 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   opendata_ph_data_platform:
     # Config indicated by + and applies to all files under models/example/
-    staging:
+    silver:
       +materialized: table
       +schema: silver
