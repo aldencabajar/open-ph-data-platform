@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: barangay_census_data
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "population > 0"
+    columns:
+      - name: barangay
+        data_tests:
+          - not_null
+      - name: city_municipality
+        data_tests:
+          - not_null
+      - name: region
+        data_tests:
+          - not_null
+      - name: population
+
