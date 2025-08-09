@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: dl
+    tables:
+      - name: barangay_census_data
+        description: contains raw census data at the barangay grain.
+        columns:
+          - name: barangay
+            description: barangay name.
+          - name: population
+            description: the number of people in the barangay.
+          - name: city_municipality
+            description: The city/municipality where the barangay is located.
+          - name: province
+            description: the province where the barangay is located.
+          - name: region
+            description: the region where the barangay is located. 
