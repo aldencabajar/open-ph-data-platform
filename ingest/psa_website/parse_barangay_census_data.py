@@ -68,7 +68,7 @@ def process_workbook(wb: Workbook, logger: Logger):
 
 def main():
     path_to_census_data = Path(sys.argv[1])
-    table_to_write = Path(sys.argv[2])
+    table_to_write = sys.argv[2]
     ducklake_catalog_conn = sys.argv[3]
     region_label = sys.argv[4]
 

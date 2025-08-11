@@ -13,7 +13,7 @@ export AIRFLOW_VAR_DUCKLAKE_METADATA_CONN="sqlite:_build/metadata.sqlite"
 export AIRFLOW_VAR_DUCKDB_PROCESS_POOL="duckdb_process"
 
 
-airflow pools set "$AIRFLOW_VAR_DUCKDB_PROCESS_POOL" 1 "pool for running duckdb processes"
 airflow standalone
+airflow pools set "$AIRFLOW_VAR_DUCKDB_PROCESS_POOL" 1 "pool for running duckdb processes"
 
 
