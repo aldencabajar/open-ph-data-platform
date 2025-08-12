@@ -7,6 +7,7 @@ import duckdb
 from airflow.decorators import setup, teardown
 from airflow.sdk import Variable, dag, task
 
+from opendata_ph.airflow_utils import create_dag_id
 from opendata_ph.constants import OpenDataPHConstants
 from opendata_ph.duckdb import initialize_duckdb_catalog
 
@@ -18,7 +19,7 @@ ducklake_metadata_conn = Variable.get(OpenDataPHConstants.DUCKLAKE_METADATA_CONN
 duckdb_process_pool_name = Variable.get(OpenDataPHConstants.DUCKDB_PROCESS_POOL)
 
 
-@dag(dag_id=os.path.basename(__file__), schedule=None)
+@dag(dag_id=create_dag_id(__file__), schedule=None)
 def ingest_and_clean_barangay_population_data():
 
     path_to_excel_files = Path(build_folder) / "raw/psa"

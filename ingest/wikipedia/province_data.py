@@ -1,7 +1,8 @@
 import asyncio
-import os
 import re
+import sys
 from pathlib import Path
+from datetime import datetime
 
 import pandas as pd
 from playwright.async_api import async_playwright
@@ -9,21 +10,18 @@ from playwright.async_api import async_playwright
 from opendata_ph.logger import create_logger
 from opendata_ph.wikipedia import merge_multiple_header_rows
 
-WIKIPEDIA_LINK = "https://en.wikipedia.org/wiki/Provinces_of_the_Philippines"
-PATH_TO_WRITE = "bronze/wikipedia/province-data.csv.gz"
-
-
 async def main():
+    wiki_link = sys.argv[1]
+    path_to_write = sys.argv[2]
     logger = create_logger("wikipedia_province_data_ingestion")
 
     async with async_playwright() as p:
-        build_folder = Path(os.environ["BUILD_FOLDER"])
 
         browser = await p.chromium.launch()
 
         page = await browser.new_page()
 
-        await page.goto(WIKIPEDIA_LINK)
+        await page.goto(wiki_link)
 
         table = page.locator("table").filter(has_text="Province")
         header_texts = await table.locator("thead tr").all_inner_texts()
@@ -50,12 +48,14 @@ async def main():
         
         # writing to csv
         df = pd.DataFrame(data=table_data, columns=headers)
+        df["source"] = wiki_link
+        df["load_datetime_utc"] = datetime.now()
         logger.info("writing %s rows", df.shape[0])
-        full_path = build_folder / Path(PATH_TO_WRITE)
+        full_path = Path(path_to_write)
 
         full_path.parent.mkdir(exist_ok=True, parents=True)
 
-        df.to_csv(full_path, index=False, compression="gzip")
+        df.to_csv(full_path, index=False)
 
         logger.info("written to path %s", str(full_path.absolute()))
 
