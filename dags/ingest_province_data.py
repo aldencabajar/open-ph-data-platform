@@ -14,7 +14,7 @@ build_folder = Variable.get(OpenDataPHConstants.BUILD_FOLDER_VAR)
 ducklake_metadata_conn = Variable.get(OpenDataPHConstants.DUCKLAKE_METADATA_CONN)
 duckdb_process_pool_name = Variable.get(OpenDataPHConstants.DUCKDB_PROCESS_POOL)
 
-PARENT_PATH = f"raw/wikipedia/province_data/"
+PARENT_PATH = f"landing/wikipedia/province_data/"
 WIKIPEDIA_LINK = "https://en.wikipedia.org/wiki/Provinces_of_the_Philippines"
 
 TABLE_NAME = "wikipedia_province_data"
@@ -77,7 +77,7 @@ def scrape_wikipedia_province_data(path_to_write: str):
 def create_bronze_view(catalog: str):
     duckdb.sql(
         f"""
-        CREATE VIEW IF NOT EXISTS {catalog}.{SCHEMA}.{TABLE_NAME} AS (
+        CREATE OR REPLACE VIEW {catalog}.{SCHEMA}.{TABLE_NAME} AS (
             SELECT *
             FROM read_csv('{build_folder}/{PARENT_PATH}/*/*.csv', hive_partitioning=true)
         )
