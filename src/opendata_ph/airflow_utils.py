@@ -1,3 +1,4 @@
+import pytz
 from datetime import datetime
 import os
 from typing import List
@@ -9,13 +10,13 @@ def create_dag_id(filepath: str):
     return os.path.splitext(os.path.basename(filepath))[0]
 
 
-def check_if_table_exists(catalog: str, table: str, schema: str) -> bool:
+def check_if_table_exists(schema: str, table: str) -> bool:
     is_exists = duckdb.sql(
         f"""
     SELECT EXISTS (
         SELECT 1
         FROM information_schema.tables
-        WHERE table_name = '{table}' and table_schema = '{schema}' and table_catalog = '{catalog}'
+        WHERE table_name = '{table}' and table_schema = '{schema}'
     ) as exists;
     """
     ).to_df()["exists"][0]
@@ -37,6 +38,8 @@ def check_if_table_is_stale(
         FROM {catalog}.{schema}.{table}
         """
     ).to_df()["load_dt"][0]
+
+    max_load_ts = pytz.utc.localize(max_load_ts)
 
     if max_load_ts < timestamp_to_compare:
         return True

@@ -1,3 +1,4 @@
+import logging
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -32,7 +33,7 @@ def main():
         build_folder / Path(METADATA_PATH), build_folder / Path(FILE_TO_PARSE)
     )
 
-    table_exists = check_if_table_exists(catalog, DataLakeLayers.BRONZE, TABLE_NAME)
+    table_exists = check_if_table_exists(DataLakeLayers.BRONZE, TABLE_NAME)
 
     if table_exists:
         is_table_stale = check_if_table_is_stale(
@@ -42,6 +43,7 @@ def main():
             "load_datetime_utc",
             meta.source_timestamp,
         )
+        print(meta.source_timestamp)
         if not is_table_stale:
             logger.info("exiting early since table is not stale.")
             return
@@ -77,7 +79,7 @@ def main():
 
     csv_write_path.parent.mkdir(parents=True, exist_ok=True)
 
-    df.to_csv(csv_write_path)
+    df.to_csv(csv_write_path, index=False)
 
     full_table_name = f"{catalog}.{DataLakeLayers.BRONZE}.{TABLE_NAME}"
     duckdb.sql(
