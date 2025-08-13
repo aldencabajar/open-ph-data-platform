@@ -4,7 +4,7 @@ sources:
   - name: bronze
     database: dl
     tables:
-      - name: barangay_census_data
+      - name: psa_barangay_census_data
         description: contains raw census data at the barangay grain.
         columns:
           - name: barangay
@@ -17,3 +17,8 @@ sources:
             description: the province where the barangay is located.
           - name: region
             description: the region where the barangay is located. 
+      - name: psa_geographical_codes
+        description: contains Philippine Standard Geograpical Codes for administrative units
+      - name: wikipedia_province_data
+        description: contains important province relevant information
+        
