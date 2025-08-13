@@ -19,6 +19,3 @@ sources:
             description: the region where the barangay is located. 
       - name: psa_geographical_codes
         description: contains Philippine Standard Geograpical Codes for administrative units
-      - name: wikipedia_province_data
-        description: contains important province relevant information
-        
