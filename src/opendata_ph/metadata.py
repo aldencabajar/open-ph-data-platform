@@ -38,6 +38,21 @@ def get_object_metadata_by_tag(
 
     return to_return
 
+def get_object_metadata_by_key_contains(
+    raw_files_metadata: RawFilesMetadata, key_contains: str
+) -> Dict[str, ObjectMetadata]:
+    
+    to_return = {
+        rel_path: meta
+        for rel_path, meta in raw_files_metadata.objects.items()
+        if key_contains in rel_path
+    }
+
+    if not to_return:
+        raise ValueError(f"No metadata found for key_contains: {key_contains}")
+
+    return to_return
+
 
 def parse_metadata(metadata_file_path: Path, object_file_path: Path) -> ObjectMetadata:
     raw_files_metadata = RawFilesMetadata.model_validate(

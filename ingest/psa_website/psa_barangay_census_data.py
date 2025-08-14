@@ -13,18 +13,17 @@ import pytz
 from openpyxl.workbook.workbook import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 
-from opendata_ph.airflow_utils import check_if_table_exists
 from opendata_ph.constants import DataLakeLayers
 from opendata_ph.duckdb import initialize_duckdb_catalog
 from opendata_ph.logger import create_logger
 from opendata_ph.metadata import (
     ObjectMetadata,
-    RawFilesMetadata,
-    get_object_metadata_by_tag,
+    get_object_metadata_by_key_contains,
+    load_metadata,
 )
 
 TABLE_NAME = "psa_barangay_census_data"
-PARENT_PATH_TO_WRITE = "landing/psa/barangay_census_data"
+PATH_TO_WRITE = "raw/psa/psa_barangay_census_data.csv"
 
 
 def main():
@@ -37,14 +36,11 @@ def main():
     catalog = initialize_duckdb_catalog(ducklake_catalog_conn)
 
     # worksheets to process
-    raw_files_metadata = RawFilesMetadata.model_validate(
-        json.load(metadata_file_path.open())
-    )
-    ws_object_metadata = get_census_data_worksheets(raw_files_metadata, catalog)
+    raw_files_metadata = load_metadata(metadata_file_path)
 
-    if not ws_object_metadata:
-        logger.info("No worksheet to parse, exiting early...")
-        return
+    ws_object_metadata = get_object_metadata_by_key_contains(
+        raw_files_metadata, "2024_census_data"
+    )
 
     dfs = []
     for rel_path, meta in ws_object_metadata.items():
@@ -57,55 +53,25 @@ def main():
         dfs.append(result)
 
     concatenated = pd.concat(dfs)
+    concatenated["census_year"] = 2024
 
     # writing to csv
-    csv_write_path = (
-        build_folder
-        / PARENT_PATH_TO_WRITE
-        / f"load_date={datetime.now().strftime("%Y-%m-%d")}"
-        / f"{str(uuid4())}.csv"
-    )
+    csv_write_path = build_folder / PATH_TO_WRITE
 
     csv_write_path.parent.mkdir(parents=True, exist_ok=True)
     concatenated.to_csv(csv_write_path, index=False)
 
     # create or replace the view over the landed csv files
-    full_table_name = f"{catalog}.{DataLakeLayers.BRONZE}.{TABLE_NAME}"
+    full_table_name = f"{catalog}.{DataLakeLayers.RAW}.{TABLE_NAME}"
     duckdb.sql(
         f"""
         CREATE OR REPLACE VIEW {full_table_name}  AS (
-            SELECT * FROM read_csv('{build_folder}/{PARENT_PATH_TO_WRITE}/*/*.csv', hive_partitioning=true)
+            SELECT * FROM read_csv('{build_folder}/{PATH_TO_WRITE}', hive_partitioning=true)
         
         )
         """
     )
     logger.info("table: '%s' created", full_table_name)
-
-
-def get_census_data_worksheets(
-    raw_files_metadata: RawFilesMetadata, catalog: str
-) -> Dict[str, ObjectMetadata]:
-    ws_object_metadata = get_object_metadata_by_tag(raw_files_metadata, ["census"])
-
-    table_exists = check_if_table_exists(DataLakeLayers.BRONZE, TABLE_NAME)
-
-    if table_exists:
-        max_load_ts: datetime = duckdb.sql(
-            f"""
-            SELECT max(load_datetime_utc) as load_dt
-            FROM {catalog}.{DataLakeLayers.BRONZE}.{TABLE_NAME}
-            """
-        ).to_df()["load_dt"][0]
-
-        max_load_ts = pytz.utc.localize(max_load_ts)
-
-        ws_object_metadata = {
-            rel_path: meta
-            for rel_path, meta in ws_object_metadata.items()
-            if meta.source_timestamp >= max_load_ts
-        }
-
-    return ws_object_metadata
 
 
 def get_region_name(file_name: Path) -> str:

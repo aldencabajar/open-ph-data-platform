@@ -1,9 +1,3 @@
-{{
-    config(
-    materialized = 'incremental',
-    )
-}}
-
 WITH preproc AS (
     SELECT
         UPPER(barangay) as barangay, 
@@ -13,18 +7,14 @@ WITH preproc AS (
         TRIM(REGEXP_REPLACE(region, '[0-9]', '')) as region,
         source_timestamp_utc,
         source_uri,
+        census_year,
         NOW() AS updated_date_time_utc
-    FROM {{ source('bronze', 'psa_barangay_census_data') }} 
-
-    {% if is_incremental() %}
-    WHERE load_datetime_utc >= coalesce((select max(updated_date_time_utc) from {{ this }}), '1900-01-01')
-
-    {% endif %}
+    FROM {{ source('raw', 'psa_barangay_census_data') }} 
 
 )
 
 SELECT 
-    {{ dbt_utils.generate_surrogate_key(['barangay', 'source_uri']) }} as id,
+    {{ dbt_utils.generate_surrogate_key(['barangay', 'census_year']) }} as id,
     preproc.*
 FROM preproc
 

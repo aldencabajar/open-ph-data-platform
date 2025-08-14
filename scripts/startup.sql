@@ -9,7 +9,7 @@ ATTACH 'ducklake:sqlite:_build/metadata.sqlite' as dl (DATA_PATH '_build/data_fi
 USE dl;
 
 /* create schema */
-CREATE SCHEMA IF NOT EXISTS dl.bronze;
-CREATE SCHEMA IF NOT EXISTS dl.silver;
-CREATE SCHEMA IF NOT EXISTS dl.gold;
+CREATE SCHEMA IF NOT EXISTS dl.raw;
+CREATE SCHEMA IF NOT EXISTS dl.staging;
+CREATE SCHEMA IF NOT EXISTS dl.final;
 

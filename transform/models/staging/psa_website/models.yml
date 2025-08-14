@@ -2,10 +2,6 @@ version: 2
 
 models:
   - name: psa_barangay_census_data
-    config:
-      materialized: incremental
-      unique_key: id
-      incremental_strategy: delete+insert
     tests:
       - dbt_utils.expression_is_true:
           expression: "population > 0"
@@ -24,8 +20,4 @@ models:
           - not_null
   
   - name: psa_geographical_codes
-    config:
-      materialized: incremental
-      unique_key: geo_code
-      incremental_strategy: delete+insert
 

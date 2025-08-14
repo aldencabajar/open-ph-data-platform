@@ -1,3 +1,4 @@
+from importlib import metadata
 import logging
 import sys
 from datetime import datetime
@@ -15,38 +16,23 @@ from opendata_ph.logger import create_logger
 from opendata_ph.metadata import parse_metadata
 
 RELEVANT_SHEET_NAME = "PSGC"
-FILE_TO_PARSE = "raw/psa/PSGC-2Q-2025-Publication-Datafile.xlsx"
-METADATA_PATH = "raw/psa/metadata.json"
-PARENT_PATH_TO_WRITE = "landing/psa/geographical_codes/"
+FILE_TO_PARSE = "landing/psa/PSGC-2Q-2025-Publication-Datafile.xlsx"
+PATH_TO_WRITE = "raw/psa/psa_geographical_codes.csv"
 TABLE_NAME = "psa_geographical_codes"
 
 
 def main():
     build_folder = Path(sys.argv[1])
-    ducklake_catalog_conn = sys.argv[2]
+    metadata_file_path = Path(sys.argv[2])
+    ducklake_catalog_conn = sys.argv[3]
 
     catalog = initialize_duckdb_catalog(ducklake_catalog_conn)
     logger = create_logger("psa_geographical_codes")
 
     # get metadata object to enrich the dataset
-    meta = parse_metadata(
-        build_folder / Path(METADATA_PATH), build_folder / Path(FILE_TO_PARSE)
-    )
+    meta = parse_metadata(Path(metadata_file_path), build_folder / Path(FILE_TO_PARSE))
 
-    table_exists = check_if_table_exists(DataLakeLayers.BRONZE, TABLE_NAME)
-
-    if table_exists:
-        is_table_stale = check_if_table_is_stale(
-            catalog,
-            TABLE_NAME,
-            DataLakeLayers.BRONZE,
-            "load_datetime_utc",
-            meta.source_timestamp,
-        )
-        print(meta.source_timestamp)
-        if not is_table_stale:
-            logger.info("exiting early since table is not stale.")
-            return
+    logger.info("parsing file %s", FILE_TO_PARSE)
 
     df = pd.read_excel(build_folder / FILE_TO_PARSE, sheet_name=RELEVANT_SHEET_NAME)
     # remove the uninformative column, two indices from the right
@@ -70,22 +56,19 @@ def main():
     df["source_timestamp_utc"] = meta.source_timestamp.astimezone(pytz.utc)
     df["load_datetime_utc"] = datetime.now()
 
-    csv_write_path = (
-        build_folder
-        / PARENT_PATH_TO_WRITE
-        / f"load_date={datetime.now().strftime("%Y-%m-%d")}"
-        / f"{str(uuid4())}.csv"
-    )
+    csv_write_path = build_folder / PATH_TO_WRITE
+
+    logger.info("writing to %s", csv_write_path)
 
     csv_write_path.parent.mkdir(parents=True, exist_ok=True)
 
     df.to_csv(csv_write_path, index=False)
 
-    full_table_name = f"{catalog}.{DataLakeLayers.BRONZE}.{TABLE_NAME}"
+    full_table_name = f"{catalog}.{DataLakeLayers.RAW}.{TABLE_NAME}"
     duckdb.sql(
         f"""
         CREATE OR REPLACE VIEW {full_table_name}  AS (
-            SELECT * FROM read_csv('{build_folder}/{PARENT_PATH_TO_WRITE}/*/*.csv', hive_partitioning=true)
+            SELECT * FROM read_csv('{build_folder}/{PATH_TO_WRITE}', hive_partitioning=true)
         
         )
         """
