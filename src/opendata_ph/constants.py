@@ -5,6 +5,6 @@ class OpenDataPHConstants:
     DUCKDB_PROCESS_POOL = "duckdb_process_pool"
 
 class DataLakeLayers(StrEnum):
-    BRONZE = "bronze"
-    SILVER = "silver"
-    GOLD = "gold"
+    RAW = "raw"
+    staging = "staging"
+    final = "final"

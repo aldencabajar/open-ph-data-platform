@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: barangay_census_data
+  - name: psa_barangay_census_data
     tests:
       - dbt_utils.expression_is_true:
           expression: "population > 0"
@@ -16,4 +16,8 @@ models:
         data_tests:
           - not_null
       - name: population
+        data_tests:
+          - not_null
+  
+  - name: psa_geographical_codes
 
