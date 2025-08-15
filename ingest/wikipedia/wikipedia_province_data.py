@@ -30,13 +30,6 @@ async def main():
 
     logger = create_logger("wikipedia_province_data")
 
-    need_to_scrape = await check_if_need_to_scrape(
-        wiki_link=WIKIPEDIA_LINK,
-        catalog_name=catalog,
-        table_name=TABLE_NAME,
-        schema=DataLakeLayers.RAW,
-    )
-
     logger.info("scraping %s", WIKIPEDIA_LINK)
 
     df = await scrape_wikipedia_province_data(WIKIPEDIA_LINK, logger)
