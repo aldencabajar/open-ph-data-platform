@@ -26,6 +26,9 @@ ingest-psa-website() {
 ingest-wikipedia() {
     echo "Ingesting Wikipedia Province Data..."
     ${PYTHON_VENV} ingest/wikipedia/wikipedia_province_data.py "${BUILD_FOLDER}" "${DUCKLAKE_METADATA_CONN}"
+
+    printf '\nIngesting Wikipedia City/Municipal Data\n'
+    ${PYTHON_VENV} ingest/wikipedia/wikipedia_city_municipality.py "${BUILD_FOLDER}" "${DUCKLAKE_METADATA_CONN}"
 }
 
 ingest() {
@@ -37,7 +40,12 @@ staging() {
     printf "\nRunning dbt staging models...\n"
     dbt run --select staging
     dbt test --select staging
+}
 
+final() {
+    printf "\nRunning dbt final models...\n"
+    dbt run --select final
+    dbt test --select final
 }
 
 "$@"
