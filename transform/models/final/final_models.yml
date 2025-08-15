@@ -22,3 +22,25 @@ models:
       - name: year_founded
         data_tests:
           - not_null
+  - name: dim_city_municipality
+    description: "Philippine city and municipality dimension table"
+    columns:
+      - name: id
+        data_tests:
+          - not_null
+          - unique
+      - name: city_municipality_name
+        data_tests:
+          - not_null
+      - name: province_id
+        data_tests:
+          - not_null
+      - name: area_in_sqm
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "area_in_sqm > 0"
+      - name: class
+        data_tests:
+          - accepted_values:
+              values: ["CC", "MUN", "HUC", 'ICC']
