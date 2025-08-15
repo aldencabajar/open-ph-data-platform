@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: raw
+    database: dl
+    tables:
+      - name: wikipedia_province_data
+        description: contains raw data about Philippine provinces sourced from Wikipedia.
+

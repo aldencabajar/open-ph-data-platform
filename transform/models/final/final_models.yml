@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: dim_province
+    description: "Philippine province dimension table"
+    columns:
+      - name: province_name
+        data_tests:
+          - not_null
+      - name: capital
+        data_tests:
+          - not_null
+      - name: island_group
+        data_tests:
+          - not_null
+      - name: area_in_sqm
+        data_tests:
+          - not_null
+      - name: region
+        data_tests:
+          - not_null
+      - name: year_founded
+        data_tests:
+          - not_null

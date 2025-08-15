@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List
 from urllib.parse import unquote, urlparse
 
-from playwright.sync_api import sync_playwright
+from playwright.async_api import async_playwright
 
 
 def merge_multiple_header_rows(header_texts: List[str]) -> List[str]:
@@ -40,17 +40,17 @@ def merge_multiple_header_rows(header_texts: List[str]) -> List[str]:
     return headers
 
 
-def get_last_edit_timestamp(page_url: str) -> datetime:
-    with sync_playwright() as p:
+async def get_last_edit_timestamp(page_url: str) -> datetime:
+    async with async_playwright() as p:
         # Create API request context
-        api_context = p.request.new_context(
+        api_context = await p.request.new_context(
             base_url="https://en.wikipedia.org/w/api.php"
         )
 
         page_title = wikipedia_title_from_url(page_url)
 
         # Make the API request
-        response = api_context.get(
+        response = await api_context.get(
             "",
             params={
                 "action": "query",
@@ -65,10 +65,11 @@ def get_last_edit_timestamp(page_url: str) -> datetime:
         if not response.ok:
             raise Exception(f"Request failed: {response.status} {response.status_text}")
 
-        data = response.json()
+        data = await response.json()
         page_data = data["query"]["pages"][0]
 
-        api_context.dispose()
+        await api_context.dispose()
+
         last_edit_timestamp = page_data["revisions"][0]["timestamp"]
         return datetime.fromisoformat(last_edit_timestamp)
 
