@@ -6,5 +6,5 @@ class OpenDataPHConstants:
 
 class DataLakeLayers(StrEnum):
     RAW = "raw"
-    staging = "staging"
-    final = "final"
+    STAGING = "staging"
+    FINAL = "final"

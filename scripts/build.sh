@@ -8,6 +8,7 @@ init-db() {
 }
 
 
+init-db
 
 BUILD_FOLDER="$(pwd)/_build"
 DUCKLAKE_METADATA_CONN="sqlite:_build/metadata.sqlite"
@@ -22,8 +23,14 @@ ingest-psa-website() {
 
 }
 
+ingest-wikipedia() {
+    echo "Ingesting Wikipedia Province Data..."
+    ${PYTHON_VENV} ingest/wikipedia/wikipedia_province_data.py "${BUILD_FOLDER}" "${DUCKLAKE_METADATA_CONN}"
+}
+
 ingest() {
     ingest-psa-website
+    ingest-wikipedia
 }
 
 staging() {

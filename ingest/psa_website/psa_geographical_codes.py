@@ -9,7 +9,6 @@ import duckdb
 import pandas as pd
 import pytz
 
-from opendata_ph.airflow_utils import check_if_table_exists, check_if_table_is_stale
 from opendata_ph.constants import DataLakeLayers
 from opendata_ph.duckdb import initialize_duckdb_catalog
 from opendata_ph.logger import create_logger
