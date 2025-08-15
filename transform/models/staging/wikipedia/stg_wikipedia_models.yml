@@ -25,5 +25,23 @@ models:
         data_tests:
           - not_null
       - name: day_of_year_founded
+  - name: wikipedia_city_municipality
+    description: "This model contains cleaned and transformed data about Philippine cities and municipalities sourced from Wikipedia."
+    columns:
+      - name: city_municipality_name
+        data_tests:
+          - not_null
+      - name: province_name
+        data_tests:
+          - not_null
+      - name: area_in_sqm
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "area_in_sqm > 0"
+      - name: class
+        data_tests:
+          - accepted_values:
+              values: ["CC", "MUN", "HUC", 'ICC']
         
 

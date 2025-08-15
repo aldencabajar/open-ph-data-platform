@@ -12,7 +12,7 @@ from playwright.async_api import async_playwright
 from opendata_ph.constants import DataLakeLayers
 from opendata_ph.duckdb import initialize_duckdb_catalog
 from opendata_ph.logger import create_logger
-from opendata_ph.wikipedia import scrape_wikipedia_table
+from opendata_ph.wikipedia import get_last_edit_timestamp, scrape_wikipedia_table
 
 WIKIPEDIA_LINK = (
     "https://en.wikipedia.org/wiki/List_of_cities_and_municipalities_in_the_Philippines"
@@ -30,7 +30,8 @@ async def main():
     logger = create_logger("wikipedia_city_municipality")
 
     df = await scrape_wikipedia_city_municipality(WIKIPEDIA_LINK, logger)
-    df["source"] = WIKIPEDIA_LINK
+    df["source_uri"] = WIKIPEDIA_LINK
+    df["source_timestamp_utc"] = await get_last_edit_timestamp(WIKIPEDIA_LINK)
     df["load_datetime_utc"] = datetime.now(tz=timezone.utc)
 
     logger.info("writing %s rows", df.shape[0])
@@ -76,7 +77,7 @@ async def scrape_wikipedia_city_municipality(link: str, logger: Logger) -> pd.Da
 
         df = await scrape_wikipedia_table(table, header_cleaner_func=_clean_header)
 
-    df.dropna(inplace=True, how="all")
+    df.dropna(inplace=True, how="any")
 
     return df
 

@@ -1,3 +1,4 @@
+import pytz
 from pandas import DataFrame
 from datetime import datetime
 from typing import Callable, List
@@ -75,7 +76,7 @@ async def get_last_edit_timestamp(page_url: str) -> datetime:
         await api_context.dispose()
 
         last_edit_timestamp = page_data["revisions"][0]["timestamp"]
-        return datetime.fromisoformat(last_edit_timestamp)
+        return datetime.fromisoformat(last_edit_timestamp).astimezone(pytz.utc)
 
 
 def wikipedia_title_from_url(url: str) -> str:
