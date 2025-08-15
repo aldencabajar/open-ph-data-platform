@@ -1,6 +1,6 @@
 
 SELECT
-{{ dbt_utils.generate_surrogate_key(['geo_code']) }} as id,
+id, 
 name as province_name,
 geo_code,
 capital,

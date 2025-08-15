@@ -1,5 +1,7 @@
 
-select psgc::string as geo_code,
+select 
+{{ dbt_utils.generate_surrogate_key(['psgc', 'name', 'geographic_level']) }} as id,
+psgc::string as geo_code,
 UPPER(TRIM(REGEXP_REPLACE(name, '\(.*\)', '', 'g'))) as name,
 UPPER(TRIM(geographic_level)) as geographic_level,
 source_uri,
