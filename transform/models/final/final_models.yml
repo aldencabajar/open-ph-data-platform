@@ -44,3 +44,27 @@ models:
         data_tests:
           - accepted_values:
               values: ["CC", "MUN", "HUC", 'ICC']
+  - name: dim_barangay
+    description: "Philippine barangay dimension table"
+    columns:
+      - name: id
+        data_tests:
+          - not_null
+          - unique
+      - name: city_municipality_id
+        data_tests:
+          - not_null
+      - name: province_id
+        data_tests:
+          - not_null
+      - name: barangay_name
+        data_tests:
+          - not_null
+      - name: geo_code 
+        data_tests:
+          - not_null
+      - name: urban_rural_class
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['U', 'R', 'UNK']
