@@ -23,6 +23,8 @@ jobs:
           poetry config virtualenvs.in-project true --local
           poetry install
 
+          echo PATH=${{ github.workspace }}/.venv/bin:$PATH >> $GITHUB_ENV
+
       - name: Setup DVC
         run: |
           dvc remote modify --local gdrive-remote gdrive_client_id '${{ secrets.DVC_GDRIVE_CLIENT_ID }}'
