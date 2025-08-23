@@ -1,0 +1,68 @@
+name: build and deploy
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Dependencies
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry config virtualenvs.in-project true --local
+          poetry install
+
+      - name: Setup DVC
+        run: |
+          dvc remote modify --local gdrive-remote gdrive_client_id '${{ secrets.DVC_GDRIVE_CLIENT_ID }}'
+          dvc remote modify --local gdrive-remote gdrive_client_secret '${{ secrets.DVC_GDRIVE_CLIENT_SECRET }}'
+          dvc remote modify --local gdrive-remote-release gdrive_client_id '${{ secrets.DVC_GDRIVE_CLIENT_ID }}'
+          dvc remote modify --local gdrive-remote-release gdrive_client_secret '${{ secrets.DVC_GDRIVE_CLIENT_SECRET }}'
+
+      - name: Download DVC Remote Files
+        run: |
+          source .venv/bin/activate
+          dvc pull -r gdrive-remote
+
+      - name: Build
+        run: bash ./scripts/build.sh build
+      
+      - name: Push to remote
+        run: |
+          rsync -av --exclude='*.dvc' --exclude='landing' _build/* pkg/
+          dvc add -r gdrive-remote-release pkg/*
+          dvc push -r gdrive-remote-release
+      
+      - name: Generate token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Push to Data Registry
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git clone https://github.com/aldencabajar/open-ph-data-assets.git
+          cd repo
+          cp pkg/*.dvc open-ph-data-assets/
+          cd open-ph-data-assets
+          git add *.dvc
+          git commit -m "Update DVC files from data platform [skip ci]"
+          git push https://github.com/aldencabajar/open-ph-data-assets.git HEAD:main
+      
+

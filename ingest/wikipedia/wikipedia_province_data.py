@@ -49,7 +49,7 @@ async def main():
     duckdb.sql(
         f"""
         CREATE OR REPLACE VIEW {full_table_name} AS (
-        SELECT * FROM read_csv('{build_folder}/{PATH_TO_WRITE}', hive_partitioning=true)
+        SELECT * FROM read_csv('{PATH_TO_WRITE}', hive_partitioning=true)
         )
         """
     )
