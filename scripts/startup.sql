@@ -5,7 +5,7 @@ Schema migration script for Initialization.
 INSTALL sqlite;
 INSTALL ducklake;
 
-ATTACH 'ducklake:sqlite:_build/metadata.sqlite' as dl (DATA_PATH '_build/data_files/');
+ATTACH 'ducklake:sqlite:metadata.sqlite' as dl (DATA_PATH 'data_files/');
 USE dl;
 
 /* create schema */

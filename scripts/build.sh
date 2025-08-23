@@ -2,19 +2,21 @@
 
 set -eo pipefail
 
-init-db() {
-    echo 'Initializing metadata db...'
-    duckdb < ./scripts/startup.sql
-}
-
-
-init-db
-
 WORKING_DIR="$(pwd)"
 BUILD_FOLDER="${WORKING_DIR}/_build"
 
 DUCKLAKE_METADATA_CONN="sqlite:metadata.sqlite"
 PYTHON_VENV="${WORKING_DIR}/.venv/bin/python"
+
+init-db() {
+    cd "$BUILD_FOLDER"
+    echo 'Initializing metadata db...'
+    duckdb < "${WORKING_DIR}/scripts/startup.sql"
+}
+
+
+init-db
+
 
 ingest-psa-website() {
     cd "$BUILD_FOLDER"
@@ -54,6 +56,15 @@ final() {
     dbt test --select final --project-dir "$WORKING_DIR"
 }
 
+
+build() {
+    ingest
+    staging
+    final
+
+}
+
 "$@"
+
 
 
