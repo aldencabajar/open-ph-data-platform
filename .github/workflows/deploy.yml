@@ -28,7 +28,7 @@ jobs:
           echo PATH=${{ github.workspace }}/.venv/bin:$PATH >> $GITHUB_ENV
 
           curl https://install.duckdb.org | sh
-          playwright install
+          ${{ github.workspace }}/.venv/bin/playwright install
 
       - name: Setup DVC
         run: |
