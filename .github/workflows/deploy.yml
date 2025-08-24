@@ -43,7 +43,7 @@ jobs:
       - name: Build
         run: |  
           export DBT_PROFILES_DIR="${{ github.workspace }}/transform/profile/"
-          dbt deps
+          dbt deps --project-dir transform/
           bash ./scripts/build.sh build
       
       - name: Push to remote
