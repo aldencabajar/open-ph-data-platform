@@ -26,6 +26,8 @@ jobs:
           poetry install
 
           echo PATH=${{ github.workspace }}/.venv/bin:$PATH >> $GITHUB_ENV
+          
+          curl https://install.duckdb.org | sh
 
       - name: Setup DVC
         run: |
