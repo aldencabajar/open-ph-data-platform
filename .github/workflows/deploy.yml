@@ -8,6 +8,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -27,14 +29,12 @@ jobs:
 
       - name: Setup DVC
         run: |
-          dvc remote modify --local gdrive-remote gdrive_client_id '${{ secrets.DVC_GDRIVE_CLIENT_ID }}'
-          dvc remote modify --local gdrive-remote gdrive_client_secret '${{ secrets.DVC_GDRIVE_CLIENT_SECRET }}'
-          dvc remote modify --local gdrive-remote-release gdrive_client_id '${{ secrets.DVC_GDRIVE_CLIENT_ID }}'
-          dvc remote modify --local gdrive-remote-release gdrive_client_secret '${{ secrets.DVC_GDRIVE_CLIENT_SECRET }}'
+          dvc remote modify gdrive-remote gdrive_use_service_account true
+          dvc remote modify gdrive-remote-release gdrive_use_service_account true
+
 
       - name: Download DVC Remote Files
         run: |
-          source .venv/bin/activate
           dvc pull -r gdrive-remote
 
       - name: Build
