@@ -41,7 +41,10 @@ jobs:
           dvc pull -r gdrive-remote
 
       - name: Build
-        run: bash ./scripts/build.sh build
+        run: |  
+          export DBT_PROFILES_DIR="${{ github.workspace }}/transform/profile/"
+          dbt deps
+          bash ./scripts/build.sh build
       
       - name: Push to remote
         run: |

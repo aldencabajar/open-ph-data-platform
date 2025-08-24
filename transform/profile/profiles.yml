@@ -1,0 +1,14 @@
+opendata_ph_data_platform:
+  target: prod
+  outputs:
+    prod:
+      type: duckdb
+      database: dl
+      schema: dev
+      attach:
+        - path: 'ducklake:sqlite:metadata.sqlite'
+          alias: dl
+      extensions:
+        - ducklake
+        - sqlite
+      threads: 1
