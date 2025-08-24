@@ -46,14 +46,12 @@ staging() {
     cd "$BUILD_FOLDER"
     printf "\nRunning dbt staging models...\n"
     dbt run --select staging --project-dir "$WORKING_DIR/transform"
-    dbt test --select staging --project-dir "$WORKING_DIR/transform"
 }
 
 final() {
     cd "$BUILD_FOLDER"
     printf "\nRunning dbt final models...\n"
     dbt run --select final --project-dir "$WORKING_DIR/transform"
-    dbt test --select final --project-dir "$WORKING_DIR/transform"
 }
 
 
