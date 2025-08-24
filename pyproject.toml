@@ -24,7 +24,7 @@ bs4 = "^0.0.2"
 pydantic = "^2.11.7"
 dvc = "^3.62.0"
 dvc-gdrive = "^3.0.1"
-pyOpenSSL = "==25.1.0"
+pyOpenSSL = "< 24.3.0"
 
 
 [tool.poetry.group.dev.dependencies]
