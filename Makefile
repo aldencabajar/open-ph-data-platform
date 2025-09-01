@@ -61,6 +61,16 @@ test: final
 
 .PHONY: test
 
+# run build without tests
+build: ingest
+	BUILD_FOLDER=$(WORKING_DIR)/$(BUILD_FOLDER) \
+	  DBT_PATH=$(WORKING_DIR)/.venv/bin/dbt \
+	  WORKING_DIR=$(WORKING_DIR) \
+	bash -c 'source scripts/build.sh && build'
+
+.PHONY: build
+
+
 destroy:
 	./scripts/clean.sh
 

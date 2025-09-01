@@ -34,14 +34,22 @@ models:
           - not_null
       - name: province_id
         data_tests:
-          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "IS NULL"
+              config:
+                where: "class = 'HUC'"
+          - dbt_utils.expression_is_true:
+              expression: "IS NOT NULL"
+              config:
+                where: "class != 'HUC'"
       - name: area_in_sqm
         data_tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "area_in_sqm > 0"
+              expression: "> 0"
       - name: class
         data_tests:
+          - not_null
           - accepted_values:
               values: ["CC", "MUN", "HUC", 'ICC']
   - name: dim_barangay

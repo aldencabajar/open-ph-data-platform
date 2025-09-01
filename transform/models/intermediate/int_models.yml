@@ -1,0 +1,25 @@
+version: 2
+models:
+  - name: psa_geographical_codes__pivoted
+    description: "This model fans out the PSA geographical codes into separate entities for provinces, cities/municipalities, and barangays."
+    columns:
+      - name: province_id
+        description: "Unique identifier for the province."
+      - name: province_name
+        description: "Name of the province."
+      - name: province_geo_code
+        description: "Geographical code of the province."
+      - name: city_municipality_id
+        description: "Unique identifier for the city or municipality."
+      - name: city_municipality_name
+        description: "Name of the city or municipality."
+      - name: city_municipality_geo_code
+        description: "Geographical code of the city or municipality."
+      - name: barangay_id
+        description: "Unique identifier for the barangay."
+      - name: barangay_name
+        description: "Name of the barangay."
+      - name: barangay_geo_code
+        description: "Geographical code of the barangay."
+      - name: urban_rural_class
+        description: "Classification of the barangay as urban or rural."

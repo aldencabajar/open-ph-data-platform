@@ -36,6 +36,12 @@ final() {
     $DBT_PATH run --select final --project-dir "$WORKING_DIR/transform"
 }
 
+build() {
+    cd "$BUILD_FOLDER"
+    printf "\nRunning dbt build...\n"
+    $DBT_PATH build --project-dir "$WORKING_DIR/transform" --exclude-resource-type test
+}
+
 
 test() {
     cd "$BUILD_FOLDER"
