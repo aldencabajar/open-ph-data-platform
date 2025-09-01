@@ -1,30 +1,12 @@
 #!/bin/bash
 
-set -eo pipefail
-
-WORKING_DIR="$(pwd)"
-BUILD_FOLDER="${WORKING_DIR}/_build"
-
-DUCKLAKE_METADATA_CONN="sqlite:metadata.sqlite"
-PYTHON_VENV="${WORKING_DIR}/.venv/bin/python"
-
-init-db() {
-    cd "$BUILD_FOLDER"
-    echo 'Initializing metadata db...'
-    duckdb < "${WORKING_DIR}/scripts/startup.sql"
-}
-
-
-init-db
-
-
 ingest-psa-website() {
     cd "$BUILD_FOLDER"
     echo "Ingesting PSA Barangay Census Data..."
-    ${PYTHON_VENV} "${WORKING_DIR}/ingest/psa_website/psa_barangay_census_data.py" "${BUILD_FOLDER}" "${BUILD_FOLDER}/landing/psa/metadata.json" "${DUCKLAKE_METADATA_CONN}"
+    ${VENV_PYTHON} "${WORKING_DIR}/ingest/psa_website/psa_barangay_census_data.py" "${BUILD_FOLDER}" "${BUILD_FOLDER}/landing/psa/metadata.json" "${DL_METADATA_CONN}"
 
     printf '\nIngesting Philippine standard geographic codes...\n'
-    ${PYTHON_VENV} "${WORKING_DIR}/ingest/psa_website/psa_geographical_codes.py" "${BUILD_FOLDER}" "${BUILD_FOLDER}/landing/psa/metadata.json" "${DUCKLAKE_METADATA_CONN}"
+    ${VENV_PYTHON} "${WORKING_DIR}/ingest/psa_website/psa_geographical_codes.py" "${BUILD_FOLDER}" "${BUILD_FOLDER}/landing/psa/metadata.json" "${DL_METADATA_CONN}"
 
 }
 
@@ -45,24 +27,25 @@ ingest() {
 staging() {
     cd "$BUILD_FOLDER"
     printf "\nRunning dbt staging models...\n"
-    dbt run --select staging --project-dir "$WORKING_DIR/transform"
+    $DBT_PATH run --select staging --project-dir "$WORKING_DIR/transform"
 }
 
 final() {
     cd "$BUILD_FOLDER"
     printf "\nRunning dbt final models...\n"
-    dbt run --select final --project-dir "$WORKING_DIR/transform"
+    $DBT_PATH run --select final --project-dir "$WORKING_DIR/transform"
 }
 
 
-build() {
-    ingest
-    staging
-    final
-
+test() {
+    cd "$BUILD_FOLDER"
+    printf "\nRunning dbt tests...\n"
+    if [ -z "$1" ]; then
+        $DBT_PATH test --project-dir "$WORKING_DIR/transform"
+        return
+    fi
+    $DBT_PATH test --project-dir "$WORKING_DIR/transform" --select "$1"
 }
-
-"$@"
 
 
 
