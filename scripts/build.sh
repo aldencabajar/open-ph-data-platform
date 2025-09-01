@@ -13,10 +13,10 @@ ingest-psa-website() {
 ingest-wikipedia() {
     cd "$BUILD_FOLDER"
     echo "Ingesting Wikipedia Province Data..."
-    ${PYTHON_VENV} "${WORKING_DIR}/ingest/wikipedia/wikipedia_province_data.py" "${BUILD_FOLDER}" "${DUCKLAKE_METADATA_CONN}"
+    ${VENV_PYTHON} "${WORKING_DIR}/ingest/wikipedia/wikipedia_province_data.py" "${BUILD_FOLDER}" "${DL_METADATA_CONN}"
 
     printf '\nIngesting Wikipedia City/Municipal Data\n'
-    ${PYTHON_VENV} "${WORKING_DIR}/ingest/wikipedia/wikipedia_city_municipality.py" "${BUILD_FOLDER}" "${DUCKLAKE_METADATA_CONN}"
+    ${VENV_PYTHON} "${WORKING_DIR}/ingest/wikipedia/wikipedia_city_municipality.py" "${BUILD_FOLDER}" "${DL_METADATA_CONN}"
 }
 
 ingest() {

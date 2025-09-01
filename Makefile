@@ -32,7 +32,7 @@ $(VENV_PYTHON):
 # ingestion of data sources
 ingest: init-db $(VENV_PYTHON)
 	WORKING_DIR=$(WORKING_DIR) BUILD_FOLDER=$(WORKING_DIR)/$(BUILD_FOLDER) DL_METADATA_CONN=$(DL_METADATA_CONN) VENV_PYTHON=$(VENV_PYTHON) \
-	bash -c 'source scripts/build.sh && ingest-psa-website'
+	bash -c 'source scripts/build.sh && ingest'
 .PHONY: ingest
 
 # transformation using dbt
@@ -60,6 +60,11 @@ test: final
       bash -c 'source scripts/build.sh && test "$(SELECT)"'
 
 .PHONY: test
+
+destroy:
+	./scripts/clean.sh
+
+.PHONY: destroy
 
 
 print-%:
