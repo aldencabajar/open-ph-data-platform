@@ -42,3 +42,15 @@ models:
 seeds:
   opendata_ph_data_platform:
     +schema: seeds
+
+vars:
+  special_geographic_areas:
+    - KADAYANGAN
+    - LIGAWASAN
+    - OLD KAABAKAN
+    - TUGUNAN
+    - NABALAWAG
+    - PAHAMUDDIN
+    - KAPALAWAN
+    - MALIDEGAO
+
