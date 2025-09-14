@@ -1,12 +1,14 @@
 
 WITH province_city_municipality_geo AS (
     SELECT DISTINCT
-        province_name,
+        COALESCE(map.wikipedia_province_name, psgc.province_name) AS province_name,
         city_municipality_id,
-        city_municipality_name
-    FROM {{ ref('psa_geographical_codes__pivoted') }}
+        COALESCE(map.wikipedia_city_mun_name, psgc.city_municipality_name) AS city_municipality_name
+    FROM {{ ref('psa_geographical_codes__pivoted') }} psgc
+    LEFT JOIN {{ ref('psgc_wikipedia_city_mun_mapping') }} map
+    ON psgc.city_municipality_name = map.psgc_city_mun_name
+    AND IFNULL(psgc.province_name, 'DEFAULT') = IFNULL(map.psgc_province_name, 'DEFAULT')
 )
-
 
 SELECT  
     wcm.* EXCLUDE (province_name, city_municipality_name),

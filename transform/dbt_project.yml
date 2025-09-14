@@ -39,3 +39,6 @@ models:
       +schema: final
       +materialized: table
 
+seeds:
+  opendata_ph_data_platform:
+    +schema: seeds

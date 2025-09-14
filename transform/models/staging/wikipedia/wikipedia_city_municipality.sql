@@ -1,6 +1,7 @@
 WITH cleaned as (
     SELECT 
-        UPPER(TRIM(REGEXP_REPLACE(city_or_municipality, '[^a-zA-z-0-9-\s]', '', 'g'))) as city_municipality_name,
+        -- includes enye (ñ) since a lot of city/municipality names have it
+        UPPER(TRIM(REGEXP_REPLACE(city_or_municipality, '[^A-Za-zÑñ0-9\s-\-\.'']', '', 'g'))) as city_municipality_name,
         REGEXP_REPLACE(area_km2, '\[.*\]|,', '', 'g')::numeric as area_in_sqm,
         UPPER(TRIM(class)) as class,
         UPPER(TRIM(province)) as province_name,

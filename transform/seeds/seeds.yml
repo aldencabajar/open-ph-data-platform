@@ -1,0 +1,8 @@
+version: 2
+
+seeds:
+  - name: psgc_wikipedia_city_mun_mapping
+    description: A special mapping from Wikipedia that maps city/municipality names to their PSGC equivalent.
+    config:
+      full_refresh: true
+

@@ -29,6 +29,9 @@ pyOpenSSL = "< 24.3.0"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.30.0"
+jupysql = "^0.11.1"
+duckdb-engine = "^0.17.0"
+magic-duckdb = "^0.2.1"
 
 [build-system]
 requires = ["poetry-core"]

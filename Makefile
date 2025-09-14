@@ -36,30 +36,6 @@ ingest: init-db $(VENV_PYTHON)
 .PHONY: ingest
 
 # transformation using dbt
-staging: ingest
-	BUILD_FOLDER=$(WORKING_DIR)/$(BUILD_FOLDER) \
-	  DBT_PATH=$(WORKING_DIR)/.venv/bin/dbt \
-	  WORKING_DIR=$(WORKING_DIR) \
-	bash -c 'source scripts/build.sh && staging'
-
-.PHONY: staging
-
-final: staging
-	BUILD_FOLDER=$(WORKING_DIR)/$(BUILD_FOLDER) \
-	  DBT_PATH=$(WORKING_DIR)/.venv/bin/dbt \
-	  WORKING_DIR=$(WORKING_DIR) \
-	bash -c 'source scripts/build.sh && final'
-
-.PHONY: final
-
-# running tests
-test: final
-	BUILD_FOLDER=$(WORKING_DIR)/$(BUILD_FOLDER) \
-	DBT_PATH=$(WORKING_DIR)/.venv/bin/dbt \
-      WORKING_DIR=$(WORKING_DIR) \
-      bash -c 'source scripts/build.sh && test "$(SELECT)"'
-
-.PHONY: test
 
 # run build without tests
 build: ingest
@@ -68,13 +44,17 @@ build: ingest
 	  WORKING_DIR=$(WORKING_DIR) \
 	bash -c 'source scripts/build.sh && build'
 
-.PHONY: build
-
+test: build
+	BUILD_FOLDER=$(WORKING_DIR)/$(BUILD_FOLDER) \
+	DBT_PATH=$(WORKING_DIR)/.venv/bin/dbt \
+      WORKING_DIR=$(WORKING_DIR) \
+      bash -c 'source scripts/build.sh && test "$(SELECT)"'
 
 destroy:
 	./scripts/clean.sh
 
-.PHONY: destroy
+
+.PHONY: build test destroy
 
 
 print-%:

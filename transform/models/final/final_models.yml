@@ -63,8 +63,6 @@ models:
         data_tests:
           - not_null
       - name: province_id
-        data_tests:
-          - not_null
       - name: barangay_name
         data_tests:
           - not_null
