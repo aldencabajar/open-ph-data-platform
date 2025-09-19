@@ -4,41 +4,57 @@ models:
   - name: dim_province
     description: "Philippine province dimension table"
     columns:
+      - name: id
+        description: Primary province key 
+        data_tests:
+          - not_null
+          - unique
       - name: province_name
+        description: Name of the province
         data_tests:
           - not_null
       - name: capital
+        description: Capital city or municipality of the province
         data_tests:
           - not_null
       - name: island_group
+        description: Island group where the province is located (Luzon, Visayas, Mindanao)
         data_tests:
           - not_null
       - name: area_in_sqm
+        description: Area of the province in square meters
         data_tests:
           - not_null
       - name: region
+        description: Region where the province is located
         data_tests:
           - not_null
       - name: year_founded
+        description: Year when the province was founded
         data_tests:
           - not_null
   - name: dim_city_municipality
     description: "Philippine city and municipality dimension table"
     columns:
       - name: id
+        description: "Unique identifier for the city or municipality (primary key)"
         data_tests:
           - not_null
           - unique
       - name: city_municipality_name
+        description: "Official name of the city or municipality"
         data_tests:
           - not_null
       - name: province_id
+        description: "Foreign key referencing the province this city or municipality belongs to; may be null for HUCs and special areas"
       - name: area_in_sqm
+        description: "Total land area of the city or municipality in square meters"
         data_tests:
           - not_null
           - dbt_utils.expression_is_true:
               expression: "> 0"
       - name: class
+        description: "Classification of the city or municipality (e.g., CC = Component City, MUN = Municipality, HUC = Highly Urbanized City, ICC = Independent Component City)"
         data_tests:
           - not_null
           - accepted_values:
@@ -47,21 +63,51 @@ models:
     description: "Philippine barangay dimension table"
     columns:
       - name: id
+        description: "Unique identifier for the barangay (primary key)"
         data_tests:
           - not_null
           - unique
       - name: city_municipality_id
+        description: "Foreign key referencing the city or municipality this barangay belongs to"
         data_tests:
           - not_null
-      - name: province_id
       - name: barangay_name
+        description: "Official name of the barangay"
         data_tests:
           - not_null
       - name: geo_code 
+        description: "Official geographic code assigned to the barangay"
         data_tests:
           - not_null
       - name: urban_rural_class
+        description: "Classification of the barangay as Urban (U), Rural (R), or Unknown (UNK)"
         data_tests:
           - not_null
           - accepted_values:
               values: ['U', 'R', 'UNK']
+  - name: fct_population
+    description: "Fact table containing population census data at the barangay level"
+    columns:
+      - name: id
+        description: "Unique identifier for the census record (primary key)"
+        data_tests:
+          - not_null
+          - unique
+      - name: barangay_id
+        description: "Foreign key referencing the barangay"
+        data_tests:
+          - not_null
+      - name: population
+        description: "Population count for the barangay in the given census year"
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: census_year
+        description: "Year when the census was conducted"
+        data_tests:
+          - not_null
+      - name: source_timestamp_utc
+        description: "Timestamp (UTC) when the source data was recorded or ingested"
+        data_tests:
+          - not_null

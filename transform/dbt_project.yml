@@ -44,7 +44,7 @@ seeds:
     +schema: seeds
 
 vars:
-  special_geographic_areas:
+  special_city_mun_geographic_areas:
     - KADAYANGAN
     - LIGAWASAN
     - OLD KAABAKAN
@@ -53,4 +53,6 @@ vars:
     - PAHAMUDDIN
     - KAPALAWAN
     - MALIDEGAO
+    - PATEROS # Pateros is in Metro Manila but is classified as a municipality
+    - CITY OF ISABELA # This city is in Basilan but is under the Zamboanga Peninsula region
 

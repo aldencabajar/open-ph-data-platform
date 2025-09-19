@@ -1,7 +1,7 @@
 -- Test: province_id should NOT be NULL for non-HUCs and non-special geographic areas
 
 WITH special_areas AS (
-    SELECT unnest({{ var('special_geographic_areas') }}) AS city_municipality_name
+    SELECT unnest({{ var('special_city_mun_geographic_areas') }}) AS city_municipality_name
 )
 SELECT *
 FROM {{ ref('dim_city_municipality') }} dcm

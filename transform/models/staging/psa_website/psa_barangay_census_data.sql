@@ -14,7 +14,7 @@ WITH preproc AS (
 )
 
 SELECT 
-    {{ dbt_utils.generate_surrogate_key(['barangay', 'census_year']) }} as id,
+    {{ dbt_utils.generate_surrogate_key(['barangay', 'city_municipality', 'province', 'census_year']) }} as id,
     preproc.*
 FROM preproc
 

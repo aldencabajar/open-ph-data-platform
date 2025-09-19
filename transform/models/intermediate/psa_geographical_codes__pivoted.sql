@@ -30,7 +30,7 @@ submun as (
         city_municipality_geo_code
     FROM (
         SELECT *,
-        SUBSTRING(geo_code, 1, LENGTH(geo_code) - 4) || '0000' as deriv_city_municipality_geo_code
+        SUBSTRING(geo_code, 1, LENGTH(geo_code) - 5) || '00000' as deriv_city_municipality_geo_code
         FROM {{ ref('psa_geographical_codes') }}
     ) sm
     LEFT JOIN city_municipality cm
