@@ -1,17 +1,17 @@
-WITH province as (
-    SELECT 
-        id as province_id,
-        name as province_name,
-        geo_code as province_geo_code
+WITH province AS (
+    SELECT
+        id AS province_id,
+        name AS province_name,
+        geo_code AS province_geo_code
     FROM {{ ref('psa_geographical_codes') }}
     WHERE geographic_level = 'PROV'
 ),
 
-city_municipality as (
-    SELECT 
-        id as city_municipality_id,
-        name as city_municipality_name,
-        geo_code as city_municipality_geo_code
+city_municipality AS (
+    SELECT
+        id AS city_municipality_id,
+        name AS city_municipality_name,
+        geo_code AS city_municipality_geo_code
     FROM {{ ref('psa_geographical_codes') }}
     WHERE geographic_level IN ('CITY', 'MUN')
 ),
@@ -20,54 +20,60 @@ city_municipality as (
 This is a special case for Manila since it is divided first into districts (sub-municipalities)
 */
 
-submun as (
-    SELECT 
-        id as sub_municipality_id,
-        name as sub_municipality_name,
-        geo_code as sub_municipality_geo_code,
+submun AS (
+    SELECT
+        id AS sub_municipality_id,
+        name AS sub_municipality_name,
+        geo_code AS sub_municipality_geo_code,
         city_municipality_id,
         city_municipality_name,
         city_municipality_geo_code
     FROM (
-        SELECT *,
-        SUBSTRING(geo_code, 1, LENGTH(geo_code) - 5) || '00000' as deriv_city_municipality_geo_code
+        SELECT
+            *,
+            SUBSTRING(geo_code, 1, LENGTH(geo_code) - 5)
+            || '00000' AS deriv_city_municipality_geo_code
         FROM {{ ref('psa_geographical_codes') }}
-    ) sm
-    LEFT JOIN city_municipality cm
-    ON sm.deriv_city_municipality_geo_code = cm.city_municipality_geo_code
+    ) AS sm
+    LEFT JOIN city_municipality AS cm
+        ON sm.deriv_city_municipality_geo_code = cm.city_municipality_geo_code
     WHERE geographic_level = 'SUBMUN'
 ),
 
-brgy as (
-    SELECT *,
-        SUBSTRING(geo_code, 1, LENGTH(geo_code) - 5) || '00000' as deriv_province_geo_code,
-        SUBSTRING(geo_code, 1, LENGTH(geo_code) - 3) || '000' as deriv_submun_geo_code,
-        SUBSTRING(geo_code, 1, LENGTH(geo_code) - 3) || '000' as deriv_city_municipality_geo_code
+brgy AS (
+    SELECT
+        *,
+        SUBSTRING(geo_code, 1, LENGTH(geo_code) - 5)
+        || '00000' AS deriv_province_geo_code,
+        SUBSTRING(geo_code, 1, LENGTH(geo_code) - 3)
+        || '000' AS deriv_submun_geo_code,
+        SUBSTRING(geo_code, 1, LENGTH(geo_code) - 3)
+        || '000' AS deriv_city_municipality_geo_code
     FROM {{ ref('psa_geographical_codes') }}
-    WHERE geographic_level = 'BGY' 
+    WHERE geographic_level = 'BGY'
 )
 
-
-SELECT 
+SELECT
     province_id,
     province_name,
     province_geo_code,
-    COALESCE(cm.city_municipality_id, sm.city_municipality_id) as city_municipality_id,
-    COALESCE(cm.city_municipality_name, sm.city_municipality_name) as city_municipality_name,
-    COALESCE(cm.city_municipality_geo_code, sm.city_municipality_geo_code) as city_municipality_geo_code,
     sub_municipality_id,
     sub_municipality_name,
     sub_municipality_geo_code,
-    brgy.id as barangay_id,
-    brgy.name as barangay_name,
-    brgy.geo_code as barangay_geo_code,
-    brgy.urban_rural_class
+    brgy.id AS barangay_id,
+    brgy.name AS barangay_name,
+    brgy.geo_code AS barangay_geo_code,
+    brgy.urban_rural_class,
+    COALESCE(cm.city_municipality_id, sm.city_municipality_id)
+        AS city_municipality_id,
+    COALESCE(cm.city_municipality_name, sm.city_municipality_name)
+        AS city_municipality_name,
+    COALESCE(cm.city_municipality_geo_code, sm.city_municipality_geo_code)
+        AS city_municipality_geo_code
 FROM brgy
-LEFT JOIN province p
-ON brgy.deriv_province_geo_code = p.province_geo_code
-LEFT JOIN city_municipality cm
-ON brgy.deriv_city_municipality_geo_code = cm.city_municipality_geo_code
-LEFT JOIN submun sm
-ON brgy.deriv_submun_geo_code = sm.sub_municipality_geo_code
-
-
+LEFT JOIN province AS p
+    ON brgy.deriv_province_geo_code = p.province_geo_code
+LEFT JOIN city_municipality AS cm
+    ON brgy.deriv_city_municipality_geo_code = cm.city_municipality_geo_code
+LEFT JOIN submun AS sm
+    ON brgy.deriv_submun_geo_code = sm.sub_municipality_geo_code
