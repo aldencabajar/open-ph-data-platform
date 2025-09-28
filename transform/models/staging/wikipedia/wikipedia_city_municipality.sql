@@ -19,7 +19,7 @@ WITH cleaned AS (
 
 SELECT
     * EXCLUDE (province_name),
-    /* We set province_name to null for HUCs since they do not 
+    /* We set province_name to null for HUCs since they do not
     belong to any province */
     CASE WHEN class = 'HUC' THEN NULL ELSE province_name END AS province_name
 FROM cleaned

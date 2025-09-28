@@ -17,17 +17,18 @@ city_municipality AS (
 ),
 
 /*
-This is a special case for Manila since it is divided first into districts (sub-municipalities)
+This is a special case for Manila since it is divided first
+into districts (sub-municipalities)
 */
 
 submun AS (
     SELECT
-        id AS sub_municipality_id,
-        name AS sub_municipality_name,
-        geo_code AS sub_municipality_geo_code,
-        city_municipality_id,
-        city_municipality_name,
-        city_municipality_geo_code
+        sm.id AS sub_municipality_id,
+        sm.name AS sub_municipality_name,
+        sm.geo_code AS sub_municipality_geo_code,
+        cm.city_municipality_id,
+        cm.city_municipality_name,
+        cm.city_municipality_geo_code
     FROM (
         SELECT
             *,
@@ -37,7 +38,7 @@ submun AS (
     ) AS sm
     LEFT JOIN city_municipality AS cm
         ON sm.deriv_city_municipality_geo_code = cm.city_municipality_geo_code
-    WHERE geographic_level = 'SUBMUN'
+    WHERE sm.geographic_level = 'SUBMUN'
 ),
 
 brgy AS (
@@ -54,12 +55,12 @@ brgy AS (
 )
 
 SELECT
-    province_id,
-    province_name,
-    province_geo_code,
-    sub_municipality_id,
-    sub_municipality_name,
-    sub_municipality_geo_code,
+    p.province_id,
+    p.province_name,
+    p.province_geo_code,
+    sm.sub_municipality_id,
+    sm.sub_municipality_name,
+    sm.sub_municipality_geo_code,
     brgy.id AS barangay_id,
     brgy.name AS barangay_name,
     brgy.geo_code AS barangay_geo_code,

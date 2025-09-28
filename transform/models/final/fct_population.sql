@@ -1,9 +1,9 @@
 SELECT
     cn.id,
     psgc.barangay_id,
-    population,
-    census_year,
-    source_timestamp_utc
+    cn.population,
+    cn.census_year,
+    cn.source_timestamp_utc
 FROM {{ ref('psa_barangay_census_data') }} AS cn
 LEFT JOIN {{ ref('psa_geographical_codes__pivoted') }} AS psgc
     ON
