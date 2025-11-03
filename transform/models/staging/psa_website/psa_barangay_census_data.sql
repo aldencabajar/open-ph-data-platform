@@ -4,7 +4,7 @@ WITH preproc AS (
         source_timestamp_utc,
         source_uri,
         census_year,
-        UPPER(barangay) AS barangay,
+        TRIM(UPPER(barangay)) AS barangay,
         TRIM(REGEXP_REPLACE(city_municipality, '[0-9]', ''))
             AS city_municipality,
         TRIM(REGEXP_REPLACE(province, '[^A-Za-z-\s]', '', 'g')) AS province,

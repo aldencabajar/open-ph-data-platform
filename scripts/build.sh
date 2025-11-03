@@ -20,6 +20,7 @@ ingest-wikipedia() {
 }
 
 ingest() {
+    set -eo pipefail
     ingest-psa-website
     ingest-wikipedia
 }
