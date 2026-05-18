@@ -2,7 +2,7 @@ import sys
 from datetime import datetime
 from logging import Logger
 from pathlib import Path
-from typing import Callable, Protocol
+from typing import Callable
 
 import duckdb
 import openpyxl
